@@ -1,11 +1,13 @@
-import React from 'react';
-import {SvgFromXml} from 'react-native-svg';
+import React from "react";
+import { SvgFromXml } from "react-native-svg";
 
-const mathjax = require('./mathjax/es5/js/mathjax.js').mathjax;
-const TeX = require('./mathjax/es5/js/input/tex.js').TeX;
-const SVG = require('./mathjax/es5/js/output/svg.js').SVG;
-const liteAdaptor = require('./mathjax/es5/js/adaptors/liteAdaptor.js').liteAdaptor;
-const RegisterHTMLHandler = require('./mathjax/es5/js/handlers/html.js').RegisterHTMLHandler;
+const mathjax = require("./mathjax/es5/js/mathjax.js").mathjax;
+const TeX = require("./mathjax/es5/js/input/tex.js").TeX;
+const SVG = require("./mathjax/es5/js/output/svg.js").SVG;
+const liteAdaptor =
+  require("./mathjax/es5/js/adaptors/liteAdaptor.js").liteAdaptor;
+const RegisterHTMLHandler =
+  require("./mathjax/es5/js/handlers/html.js").RegisterHTMLHandler;
 const adaptor = liteAdaptor();
 RegisterHTMLHandler(adaptor);
 
@@ -18,10 +20,10 @@ const params = {
   width: 80,
   inline: true,
   packages: AllPackages.sort().join(", "),
-  fontCache: true
+  fontCache: true,
 };
 
-const getScale = _svgString => {
+const getScale = (_svgString) => {
   const svgString = _svgString.match(/<svg([^\>]+)>/gi).join("");
 
   let [width, height] = (svgString || "")
@@ -47,7 +49,7 @@ const applyScale = (svgString, [width, height]) => {
 };
 
 const applyColor = (svgString, fillColor) => {
-  return svgString.replace(/currentColor/gim, `${fillColor}`);;
+  return svgString.replace(/currentColor/gim, `${fillColor}`);
 };
 
 const texToSvg = (textext = "", fontSize = 8) => {
@@ -60,7 +62,7 @@ const texToSvg = (textext = "", fontSize = 8) => {
   const node = html.convert(textext, {
     display: true,
     em: params.em,
-    ex: params.ex
+    ex: params.ex,
   });
 
   let svgString = adaptor.outerHTML(node) || "";
@@ -75,13 +77,13 @@ const texToSvg = (textext = "", fontSize = 8) => {
   return `${svgString}`;
 };
 
-const MathJax = props => {
+const MathJax = (props) => {
   const textext = props.children || "";
   const fontSize = props.fontSize ? props.fontSize / 2 : undefined;
   let svgXml = texToSvg(textext, fontSize);
-  svgXml = applyColor(svgXml, props.color ? props.color : 'black');
+  svgXml = applyColor(svgXml, props.color ? props.color : "black");
   return <SvgFromXml xml={svgXml} {...props} />;
 };
 
 export default MathJax;
-export {texToSvg};
+export { texToSvg };
