@@ -3,6 +3,7 @@ import { SvgFromXml } from "react-native-svg";
 
 const mathjax = require("./mathjax/es5/js/mathjax.js").mathjax;
 const TeX = require("./mathjax/es5/js/input/tex.js").TeX;
+const MathML = require("./mathjax/es5/js/input/mathml.js").MathML;
 const SVG = require("./mathjax/es5/js/output/svg.js").SVG;
 const liteAdaptor =
   require("./mathjax/es5/js/adaptors/liteAdaptor.js").liteAdaptor;
@@ -13,6 +14,9 @@ RegisterHTMLHandler(adaptor);
 
 const AllPackages =
   require("./mathjax/es5/js/input/tex/AllPackages").AllPackages;
+
+const TexFormat = "Tex";
+const MathMLFormat = "MathML";
 
 const params = {
   ex: 8,
@@ -52,14 +56,25 @@ const applyColor = (svgString, fillColor) => {
   return svgString.replace(/currentColor/gim, `${fillColor}`);
 };
 
-const texToSvg = (textext = "", fontSize = 8) => {
-  if (!textext) {
+const buildInputJax = (inputFormat) => {
+  if (inputFormat === MathMLFormat) return new MathML();
+  if (inputFormat === TexFormat)
+    return new TeX({ packages: params.packages.split(/\s*,\s*/) });
+
+  throw new Error("Unsupported inputFormat");
+};
+
+const convertToSvg = (text = "", fontSize = 8, inputFormat = "Tex") => {
+  if (!text) {
     return "";
   }
-  const tex = new TeX({ packages: params.packages.split(/\s*,\s*/) });
+
   const svg = new SVG({ fontCache: params.fontCache ? "local" : "none" });
-  const html = mathjax.document("", { InputJax: tex, OutputJax: svg });
-  const node = html.convert(textext, {
+  const html = mathjax.document("", {
+    InputJax: buildInputJax(inputFormat),
+    OutputJax: svg,
+  });
+  const node = html.convert(text, {
     display: true,
     em: params.em,
     ex: params.ex,
@@ -78,9 +93,10 @@ const texToSvg = (textext = "", fontSize = 8) => {
 };
 
 const MathJax = (props) => {
-  const textext = props.children || "";
+  const text = props.children || "";
   const fontSize = props.fontSize ? props.fontSize / 2 : undefined;
-  let svgXml = texToSvg(textext, fontSize);
+  const inputFormat = props.inputFormat || TexFormat;
+  let svgXml = convertToSvg(text, fontSize, inputFormat);
   svgXml = applyColor(svgXml, props.color ? props.color : "black");
   return <SvgFromXml xml={svgXml} {...props} />;
 };

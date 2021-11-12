@@ -1,4 +1,4 @@
-# React Native component to display Latex using MathJax without WebView
+# React Native component to display Latex/MathML using MathJax without WebView
 
 ## Installation
 ```
@@ -23,6 +23,7 @@ import MathJax from 'react-native-mathjax-svg';
 | ------------- | -------------- | --------------------------------------- |
 |  fontSize     | 16             | Size of font to display formula         |
 |  color        | 'black'        | Color of formula to display             |
+|  inputFormat  | 'Tex'          | Supported formats ('Tex' and 'MathML')  |
 
 
 ## Example
